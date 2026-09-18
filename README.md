@@ -1,5 +1,7 @@
 # Mechanistic Learning Framework for Breast Cancer Relapse Prediction
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22830699.svg)](https://doi.org/10.5281/zenodo.22830699)
+
 Code accompanying:
 
 > Pérez-Velázquez, J., Gölgeli, M., Kulaç, İ. *A Mechanistic Learning
@@ -67,8 +69,14 @@ paper's Limitations and Future Directions sections.
 
 ## Citation
 
-If you use this code, please cite the paper above (full citation to be
-updated on acceptance) and the METABRIC dataset:
+If you use this code, please cite the archived release and the paper
+above (full paper citation to be updated on acceptance):
+
+> Pérez-Velázquez, J., Gölgeli, M., Kulaç, İ. (2026). Mechanistic
+> Learning Framework for Breast Cancer Relapse Prediction (v1.0.2)
+> [Software]. Zenodo. https://doi.org/10.5281/zenodo.22830699
+
+And the METABRIC dataset:
 
 > Curtis, C. et al. The genomic and transcriptomic architecture of 2,000
 > breast tumours reveals novel subgroups. *Nature* 486, 346–352 (2012).
