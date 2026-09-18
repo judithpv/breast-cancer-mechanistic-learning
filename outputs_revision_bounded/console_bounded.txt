@@ -1,0 +1,160 @@
+Analytic cohort N=1,814, events=737 (40.6%), median follow-up 101.7 months
+
+======================================================================
+1. Identifiability: the submitted (unanchored, linear-link) model lies on a flat ridge
+======================================================================
+Submitted fit reproduced: theta = [4.99975, 0.07651, 0.45013, 0.08481, 0.00803, -0.00031, 0.02406, -0.0064], loss = 8529310.1006, in-sample C = 0.6593
+alpha0 hat = 4.9998 vs initial value 5.0  (initialisation-dependent: ridge has no gradient)
+   c     alpha0    beta0         loss  rel_loss_change  C_index  n0_mean_patient
+0.50  12.861508 0.042404 8.529310e+06              0.0 0.659301     1.656253e+06
+0.80   8.144454 0.067846 8.529310e+06              0.0 0.659301     3.553060e+04
+1.00   4.999751 0.084808 8.529310e+06              0.0 0.659301     2.743173e+03
+1.25   1.068872 0.106010 8.529310e+06              0.0 0.659301     1.116391e+02
+2.00 -10.723765 0.169615 8.529310e+06              0.0 0.659301     7.524996e-03
+Loss and C-index are exactly invariant along the ridge; the implied absolute n0 is not.
+Scale-normalised Hessian eigenvalues (submitted model): [4.341e-04 2.068e+07 1.539e+10 2.241e+10 3.335e+11 3.969e+12 1.646e+13
+ 2.710e+14]
+  smallest/largest = 1.60e-18  -> one (near-)null direction
+
+======================================================================
+2. Anchored model and saturating Seed links (reviewer points 1-3)
+======================================================================
+Anchor: lambda(reference phenotype grade 2, ER+, HER2-, PR+) fixed to ln2 / VDT, VDT = 185 days -> lambda_ref = 0.1140 month^-1  [CONFIRM CITATION]
+seed_link  n_params         loss     C_in     C_cv  C_cv_sd  n_Tpred_le_0  min_Tpred  max_ln_n0  hess_min_over_max  alpha1_size  alpha2_nodes  beta0_implied  beta_GRADE  beta_ER_BIN  beta_HER2_BIN  beta_PR_BIN
+   linear         7 8.529310e+06 0.659301 0.656944 0.017045             7 -63.066790  28.529031       6.200562e-10     0.092660      0.545161       0.102712    0.009728    -0.000371       0.029135    -0.007756
+    log1p         7 8.451024e+06 0.655377 0.654036 0.013982             3 -32.437159  24.926453       6.083209e-10     0.084238      2.994943       0.104550    0.008358    -0.000045       0.027879    -0.007180
+       pN         7 8.493022e+06 0.650499 0.648977 0.014658             3 -33.104190  25.012677       7.670925e-10     0.086987      2.762263       0.104591    0.008568    -0.000722       0.027753    -0.006964
+  bounded         7 8.487515e+06 0.659117 0.657001 0.017066             0   0.502189  20.661578       3.626440e-09     0.025718      0.160663       0.101777    0.008796     0.000161       0.028472    -0.005489
+
+MAIN REVISED MODEL = anchored + bounded node link  (change with --main-link)
+
+======================================================================
+3. Illustrative patients and sensitivity of absolute n0 to the anchor
+======================================================================
+           model                                  patient     ln_n0     n0_cells  lambda_per_month  doubling_time_days  T_pred_months risk_group
+ anchored_linear                           A (aggressive)  6.095580 4.438914e+02          0.161032          131.015532      90.837248       High
+ anchored_linear                           B (favourable)  3.070194 2.154608e+01          0.104313          202.253353     169.231648        Low
+ anchored_linear Reviewer case (26 mm, 42 nodes, A-speed) 26.986209 5.247613e+11          0.161032          131.015532     -38.892587       High
+ anchored_linear                              Cohort mean  5.213255 1.836911e+02          0.125520          168.082462     123.566302       High
+anchored_bounded                           A (aggressive)  6.401227 6.025839e+02          0.156637          134.691672      91.434724       High
+anchored_bounded                           B (favourable)  3.274603 2.643273e+01          0.105245          200.462026     165.790571        Low
+anchored_bounded Reviewer case (26 mm, 42 nodes, A-speed) 20.626079 9.073863e+08          0.156637          134.691672       0.620461       High
+anchored_bounded                              Cohort mean  5.334779 2.074269e+02          0.123843          170.358032     124.257923       High
+Median T_pred (main model, in-sample) = 132.5 months
+ VDT_days  lambda_ref  scale_c  ln_n0_cohort_mean  n0_cohort_mean_cells  T_pred_cohort_mean
+      100    0.210977 1.850000          -7.745435              0.000433          124.257923
+      150    0.140651 1.233333           1.744132              5.720935          124.257923
+      200    0.105488 0.925000           6.488916            657.809661          124.257923
+      250    0.084391 0.740000           9.335786          11336.531473          124.257923
+
+======================================================================
+4. Out-of-fold performance of the main model vs Cox (points 4, 6)
+======================================================================
+             model     C_cv   AUC_5y  AUC_10y  AUC_15y     C_in
+mechanistic (main) 0.655875 0.704570 0.683094 0.667556 0.659117
+Cox PH, 6 features 0.656054 0.707734 0.683010 0.664938 0.658924
+Per-fold C (mech):  [0.6819, 0.6382, 0.6546, 0.6647, 0.6456]
+Per-fold C (Cox) :  [0.6786, 0.642, 0.6531, 0.6645, 0.6437]
+Paired per-fold delta C (mech - Cox): mean +0.0006, sd 0.0027
+
+Cox PH coefficients (full cohort):
+| covariate | coef | exp(coef) | coef lower 95% | coef upper 95% | p |
+|---|---|---|---|---|---|
+| TUMOR_SIZE | 0.0108 | 1.0108 | 0.0072 | 0.0143 | 0.0000 |
+| LYMPH_NODES_EXAMINED_POSITIVE | 0.0632 | 1.0653 | 0.0518 | 0.0747 | 0.0000 |
+| GRADE | 0.1829 | 1.2007 | 0.0531 | 0.3127 | 0.0057 |
+| ER_BIN | 0.0263 | 1.0267 | -0.1782 | 0.2308 | 0.8009 |
+| HER2_BIN | 0.3471 | 1.4149 | 0.1394 | 0.5547 | 0.0011 |
+| PR_BIN | -0.1224 | 0.8848 | -0.2970 | 0.0521 | 0.1691 |
+                                      split  n_high  n_low  events_high  events_low  logrank_stat      p_value
+                     in-sample median split     907    907          462         275    109.617328 1.188570e-25
+out-of-fold split (training-fold threshold)     908    906          464         273    112.623923 2.608414e-26
+
+======================================================================
+5. Collinearity and treatment confounding structure (points 5, 7)
+======================================================================
+ER x PR cross-tab:
+PR_BIN  0.0  1.0
+ER_BIN          
+0.0     414   17
+1.0     449  934
+phi(ER, PR) = 0.542
+
+ER x hormone therapy:
+HT_BIN  0.0  1.0
+ER_BIN          
+0.0     307  124
+1.0     384  999
+
+HER2 x chemotherapy:
+CHEMO_BIN   0.0  1.0
+HER2_BIN            
+0.0        1299  288
+1.0         128   99
+Variance inflation factors: {'GRADE': np.float64(1.23), 'ER_BIN': np.float64(1.99), 'HER2_BIN': np.float64(1.11), 'PR_BIN': np.float64(1.46), 'HT_BIN': np.float64(1.18), 'CHEMO_BIN': np.float64(1.3)}
+
+======================================================================
+6. Treatment, continuous-receptor and immune-Soil variants (points 4, 7, 8) — point estimates + CV
+======================================================================
+    variant    N     C_in     C_cv  C_cv_cox_same_feats  n_Tpred_le_0                                                                                                coefficients
+       main 1814 0.659117 0.657001             0.656388             0                                         GRADE=+0.008796 ER_BIN=+0.000161 HER2_BIN=+0.02847 PR_BIN=-0.005489
+   treat_HT 1814 0.655092 0.652229             0.657472             0                        GRADE=+0.008471 ER_BIN=-0.002001 HER2_BIN=+0.02991 PR_BIN=-0.005098 HT_BIN=+0.004812
+ treat_HTCT 1814 0.655214 0.651961             0.658692             0     GRADE=+0.007452 ER_BIN=+0.004744 HER2_BIN=+0.02828 PR_BIN=-0.005416 HT_BIN=+0.005528 CHEMO_BIN=+0.02082
+cont_recept 1814 0.661220 0.656654             0.656308             0                                          GRADE=+0.007625 ESR1_Z=-0.002565 ERBB2_Z=+0.003599 PGR_Z=-0.005052
+    her2_cn 1810 0.655663 0.652227             0.652563             0                                         GRADE=+0.009163 ER_BIN=-0.001568 HER2_CN=+0.008914 PR_BIN=-0.007361
+      mki67 1814 0.674602 0.671461             0.669285             0                        GRADE=+0.003626 ER_BIN=+0.003689 HER2_BIN=+0.02806 PR_BIN=-0.002812 MKI67_Z=+0.01162
+    imm_sig 1814 0.663132 0.660272             0.659072             0                    soil:IMM_SIG_Z=-0.1746 GRADE=+0.009591 ER_BIN=-0.0028 HER2_BIN=+0.02946 PR_BIN=-0.006002
+    imm_cyt 1814 0.664408 0.661863             0.661277             0                       soil:CYT_Z=-0.1934 GRADE=+0.009312 ER_BIN=-0.002612 HER2_BIN=+0.0288 PR_BIN=-0.006202
+   imm_pdl1 1814 0.659139 0.657180             0.655757             0                       soil:PDL1_Z=-0.01058 GRADE=+0.008804 ER_BIN=+8e-05 HER2_BIN=+0.02849 PR_BIN=-0.005516
+  mki67_imm 1814 0.677554 0.673568             0.672673             0 soil:IMM_SIG_Z=-0.1598 GRADE=+0.004362 ER_BIN=+0.000869 HER2_BIN=+0.02883 PR_BIN=-0.003367 MKI67_Z=+0.01186
+
+======================================================================
+7. Paired bootstrap, 1000 resamples, out-of-bag scoring (points 4, 5)
+======================================================================
+bootstrap wall time 391 s
+                parameter  estimate  boot_mean     ci_lo     ci_hi expected_sign  ci_excludes_zero sign_ok
+                   alpha0 -2.058834  -2.063720 -2.454698 -1.705472                            True        
+              alpha1_size  0.025718   0.025742  0.014551  0.035873             +              True    True
+             alpha2_nodes  0.160663   0.161983  0.123619  0.207940             +              True    True
+               beta_GRADE  0.008796   0.008797  0.001191  0.016439             +              True    True
+              beta_ER_BIN  0.000161   0.000299 -0.014511  0.013764             -             False   False
+            beta_HER2_BIN  0.028472   0.028898  0.010239  0.049339             +              True    True
+              beta_PR_BIN -0.005489  -0.005541 -0.015571  0.005073             -             False    True
+beta0 (implied by anchor)  0.101777   0.101690  0.079058  0.126283                            True        
+
+Parameter CIs, variant treat_HT:
+    parameter  estimate     ci_lo     ci_hi
+       alpha0 -2.192280 -2.684864 -1.763678
+  alpha1_size  0.026520  0.014468  0.037316
+ alpha2_nodes  0.163952  0.125227  0.215871
+   beta_GRADE  0.008471  0.000596  0.016467
+  beta_ER_BIN -0.002001 -0.018072  0.013104
+beta_HER2_BIN  0.029908  0.010761  0.051680
+  beta_PR_BIN -0.005098 -0.015232  0.006098
+  beta_HT_BIN  0.004812 -0.004580  0.014712
+
+Parameter CIs, variant treat_HTCT:
+     parameter  estimate     ci_lo     ci_hi
+        alpha0 -2.255578 -2.805841 -1.804796
+   alpha1_size  0.026655  0.013985  0.038295
+  alpha2_nodes  0.155558  0.118373  0.207713
+    beta_GRADE  0.007452 -0.000319  0.015381
+   beta_ER_BIN  0.004744 -0.010897  0.019257
+ beta_HER2_BIN  0.028278  0.009394  0.050456
+   beta_PR_BIN -0.005416 -0.015681  0.005734
+   beta_HT_BIN  0.005528 -0.003633  0.015157
+beta_CHEMO_BIN  0.020824  0.004495  0.038387
+                                   comparison  delta_C_mean     ci_lo    ci_hi  n_valid  frac_positive  C_A_oob  C_B_oob
+mechanistic (main) - Cox PH (same 6 features)      0.000313 -0.009273 0.010305     1000          0.516 0.653023 0.652710
+        continuous ESR1/PGR/ERBB2 mRNA - main      0.002400 -0.009830 0.015642     1000          0.672 0.655423 0.653023
+                           +MKI67 mRNA - main      0.015026  0.001553 0.025736     1000          0.984 0.668050 0.653023
+                      +hormone therapy - main     -0.005838 -0.021741 0.001423     1000          0.122 0.647186 0.653023
+                      +hormone & chemo - main     -0.006315 -0.023015 0.004398     1000          0.199 0.646709 0.653023
+                 Soil=immune signature - main      0.002718 -0.005930 0.008151     1000          0.842 0.655742 0.653023
+                  Soil=cytolytic score - main      0.003963 -0.005938 0.010152     1000          0.878 0.656986 0.653023
+                       Soil=PD-L1 mRNA - main     -0.001056 -0.006739 0.001093     1000          0.307 0.651967 0.653023
+                  +MKI67 & immune Soil - main      0.017186  0.002947 0.029154     1000          0.987 0.670210 0.653023
+
+Done in 7.2 min. Outputs in \\wsl.localhost\Ubuntu\home\judith\uterine-cancer-paper\BreastCancer_MBpaper\outputs_revision_bounded
+
+[exited with code 0]

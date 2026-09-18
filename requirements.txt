@@ -1,0 +1,6 @@
+numpy>=2.3
+pandas>=2.3
+scipy>=1.18
+matplotlib>=3.11
+lifelines>=0.30
+joblib>=1.5
