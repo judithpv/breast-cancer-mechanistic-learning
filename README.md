@@ -62,7 +62,10 @@ PDF, a `results.json`, and a human-readable `summary.md`).
 
 `table_vdt_sensitivity.csv` shows how the absolute scale of the initial burden
 $n_0$ depends on the literature doubling-time anchor (100-500 days); rank-based
-results do not depend on it. The badge above resolves to the latest archived
+results do not depend on it for the log1p link.
+`table_anchor_M_sensitivity.csv` refits the log1p and bounded links from scratch for different
+anchors (150, 185, 250 days) and detection thresholds ($M=10^8$, $10^9$ cells): for log1p, $T_{\mathrm{pred}}$ and the C-index are
+unchanged, whereas the bounded link's fit depends on both. The badge above resolves to the latest archived
 version; the citation below is for the version matching these outputs.
 
 ## Status

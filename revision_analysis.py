@@ -71,6 +71,23 @@ GENES      = ['ESR1', 'PGR', 'ERBB2', 'MKI67',
               'LAG3', 'HLA-DRA', 'MS4A1', 'CD19', 'CD79A', 'IGKC', 'CCL5']
 IMMUNE_GENES = GENES[4:]
 
+# ----------------------------------------------------------------------------- anchor / threshold override
+from contextlib import contextmanager
+
+@contextmanager
+def anchor_and_threshold(vdt_days=None, m_cells=None):
+    """Temporarily override the doubling-time anchor and/or the detection threshold M (module globals), then restore."""
+    global M, LN_M, LAM_REF
+    saved = (M, LN_M, LAM_REF)
+    try:
+        if m_cells is not None:
+            M = float(m_cells); LN_M = np.log(M)
+        if vdt_days is not None:
+            LAM_REF = np.log(2.0) / (vdt_days / DAYS_PER_MONTH)
+        yield
+    finally:
+        M, LN_M, LAM_REF = saved
+
 # ----------------------------------------------------------------------------- data
 def load_cohort(tar_path, cache_csv):
     if os.path.exists(cache_csv):
@@ -362,6 +379,27 @@ def main():
     ax.axhline(LN_M, color='k', lw=0.8); ax.text(1, LN_M + 0.3, r'$\ln M$ (detection threshold)', fontsize=9)
     ax.set_xlabel('Positive lymph nodes'); ax.set_ylabel(r'$\ln n_0$ at median tumour size'); ax.legend(); ax.grid(alpha=0.25)
     ax.spines[['top', 'right']].set_visible(False); plt.tight_layout(); plt.savefig(os.path.join(out, 'fig_seed_link.pdf')); plt.close()
+
+    # ================================================================== 2b. dependence of the fit on the anchor and on M, log1p vs bounded
+    sec('2b. Does the fit depend on the doubling-time anchor and on the detection threshold M? (log1p vs bounded link)')
+    line('Each configuration is refitted from scratch (not rescaled). For the log-linear log1p link the scale invariance of Section 1 implies that\n'
+         'T_pred and all rank metrics are unchanged and absolute n0 scales with M; the bounded link (ln n0 = ln M * logistic(z)) has no such invariance.')
+    am_rows = []
+    for link in ['log1p', 'bounded']:
+        for vdt, m_cells in [(150, 1e9), (185, 1e9), (250, 1e9), (185, 1e8)]:
+            with anchor_and_threshold(vdt, m_cells):
+                spec = dict(name=f'anchored_{link}', speed=BASE_SPEED, soil=[], link=link, anchored=True)
+                Xs, Xsp, Xso = design(df, spec)
+                th, res = fit(spec, Xs, Xsp, Xso, t, e)
+                tp = predict_t(th, spec, Xs, Xsp, Xso); lnn0 = ln_n0_of(th, spec, Xs, Xso)
+                cvx = cv_oof(df, spec)
+                a, b0, b = unpack(th, spec)
+                am_rows.append(dict(seed_link=link, VDT_days=vdt, M_cells=m_cells, loss=res.fun, C_in=concordance_index(t, tp, e),
+                                    C_cv=np.mean(cvx['c_mech_folds']), n_Tpred_le_0=int((tp <= 0).sum()),
+                                    mean_Tpred_months=float(tp.mean()), median_n0_cells=float(np.exp(np.median(lnn0))),
+                                    alpha0=a[0], alpha1_size=a[1], alpha2_nodes=a[2], **{f'beta_{c}': v for c, v in zip(BASE_SPEED, b)}))
+    table(pd.DataFrame(am_rows), 'anchor_M_sensitivity', '%.5g')
+    R['anchor_M_sensitivity'] = am_rows
 
     # ================================================================== 3. illustrative patients, VDT sensitivity
     sec('3. Illustrative patients and sensitivity of absolute n0 to the anchor')
