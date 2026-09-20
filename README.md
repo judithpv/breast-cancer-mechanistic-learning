@@ -18,7 +18,7 @@ the paper for the full derivation and biological rationale.
 | File | Purpose |
 |---|---|
 | `mechanistic_model.py` | Base implementation: data loading, ODE model, domain mapping (Seed/Speed), censoring-aware loss, L-BFGS-B fitting, Cox PH baseline, 5-fold CV, using an unanchored model with a linear nodal link. |
-| `experiments.py` | Feature-selection ablation experiments (Table 1 in the paper): isolates the marginal contribution of HER2/PR and candidate Soil proxies (cellularity, age). |
+| `experiments.py` | Feature-selection ablation experiments (Table 2 in the paper): isolates the marginal contribution of HER2/PR and candidate Soil proxies (cellularity, age). |
 | `revision_analysis.py` | Primary analysis and sensitivity analyses: scale-anchored model (log1p nodal link), identifiability analysis, alternative Seed links (linear / pN-stage / bounded), paired-bootstrap confidence intervals, treatment-confounding sensitivity, molecular/immune Soil extensions, and sensitivity to the doubling-time anchor and detection threshold. Companion to `mechanistic_model.py`. This is the entry point for reproducing the main results reported in the paper. |
 | `make_fig1.py` | Regenerates the Figure 1 pipeline schematic. |
 | `outputs_revision/`, `outputs_revision_bounded/` | Example outputs (tables, figures, bootstrap results) for the two analyses with the log1p link (`outputs_revision/`) and the bounded link (`outputs_revision_bounded/`) as the main model, included for reference. |
