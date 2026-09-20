@@ -328,7 +328,7 @@ def main():
     # ================================================================== 2. anchored fits, seed-link comparison
     sec('2. Anchored model and saturating Seed links (reviewer points 1-3)')
     line(f'Anchor: lambda(reference phenotype grade 2, ER+, HER2-, PR+) fixed to ln2 / VDT, VDT = {VDT_REF_DAYS:.0f} days '
-         f'-> lambda_ref = {LAM_REF:.4f} month^-1  [CONFIRM CITATION]')
+         f'-> lambda_ref = {LAM_REF:.4f} month^-1  (Nakashima et al. 2019; Dahan et al. 2021)')
     link_rows = []; fits = {}
     for link in ['linear', 'log1p', 'pN', 'bounded']:
         spec = dict(name=f'anchored_{link}', speed=BASE_SPEED, soil=[], link=link, anchored=True)
@@ -384,7 +384,7 @@ def main():
     R['patients'] = pt_rows
     # VDT sensitivity (ratios are invariant; absolute n0 scales with the anchor)
     vdt_rows = []
-    for vdt in [100, 150, 200, 250]:
+    for vdt in [100, 126, 150, 164, 185, 200, 250, 268, 332, 400, 500]:  # spans published subtype/receptor-specific doubling times
         lam_ref = np.log(2) / (vdt / DAYS_PER_MONTH); c = lam_ref / LAM_REF
         a, b0, b = unpack(th_main, spec_main)
         # along the ridge: D -> c*D  (D = ln M - ln n0), lambda -> c*lambda ; T_pred unchanged

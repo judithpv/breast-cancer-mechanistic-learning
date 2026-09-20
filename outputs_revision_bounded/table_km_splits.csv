@@ -1,3 +1,3 @@
 split,n_high,n_low,events_high,events_low,logrank_stat,p_value
-in-sample median split,907,907,462,275,109.61732797312895,1.1885699547815556e-25
-out-of-fold split (training-fold threshold),908,906,464,273,112.62392309416774,2.6084138160926906e-26
+in-sample median split,907,907,462,275,109.61732797312888,1.188569954781598e-25
+out-of-fold split (training-fold threshold),908,906,464,273,112.62392309416786,2.608413816092522e-26
