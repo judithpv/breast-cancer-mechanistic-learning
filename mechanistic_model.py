@@ -198,7 +198,7 @@ print(f'In-sample C-Index (mechanistic): {c_mech_insample:.4f}')
 
 # =============================================================================
 # 5. Cox PH multivariate baseline (same 6 features, in-sample)
-#    This is the key reviewer-requested comparison.
+#    This is the key comparison against the standard Cox baseline.
 # =============================================================================
 print()
 print('=' * 60)

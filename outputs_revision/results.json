@@ -326,7 +326,7 @@
   },
   {
    "model": "anchored_linear",
-   "patient": "Reviewer case (26 mm, 42 nodes, A-speed)",
+   "patient": "C (extreme nodal burden: 26 mm, 42 nodes, A-speed)",
    "ln_n0": 26.986201958141578,
    "n0_cells": 524757431821.5757,
    "lambda_per_month": 0.16103179047373656,
@@ -366,7 +366,7 @@
   },
   {
    "model": "anchored_log1p",
-   "patient": "Reviewer case (26 mm, 42 nodes, A-speed)",
+   "patient": "C (extreme nodal burden: 26 mm, 42 nodes, A-speed)",
    "ln_n0": 14.561875182173631,
    "n0_cells": 2109317.8981577605,
    "lambda_per_month": 0.15750366456450834,
@@ -565,7 +565,7 @@
    {
     "variant": "cont_recept",
     "N": 1814,
-    "C_in": 0.6571309369673749,
+    "C_in": 0.6571320150194211,
     "C_cv": 0.6538275834822936,
     "C_cv_cox_same_feats": 0.6563077289682526,
     "n_Tpred_le_0": 3,
@@ -602,7 +602,7 @@
     "variant": "imm_cyt",
     "N": 1814,
     "C_in": 0.6625675534363448,
-    "C_cv": 0.6594822490309544,
+    "C_cv": 0.6594766629068867,
     "C_cv_cox_same_feats": 0.6612771898237328,
     "n_Tpred_le_0": 3,
     "coefficients": "soil:CYT_Z=-1.038 GRADE=+0.009227 ER_BIN=-0.004452 HER2_BIN=+0.02861 PR_BIN=-0.009432"
@@ -658,9 +658,9 @@
     "beta_CHEMO_BIN": 0.015023
    },
    "cont_recept": {
-    "alpha0": 2.171397,
+    "alpha0": 2.171402,
     "alpha1_size": 0.079528,
-    "alpha2_nodes": 2.845974,
+    "alpha2_nodes": 2.845973,
     "beta_GRADE": 0.007475,
     "beta_ESR1_Z": -0.002153,
     "beta_ERBB2_Z": 0.003334,
@@ -676,9 +676,9 @@
     "beta_PR_BIN": -0.009066
    },
    "mki67": {
-    "alpha0": 1.781947,
+    "alpha0": 1.781942,
     "alpha1_size": 0.079429,
-    "alpha2_nodes": 2.929593,
+    "alpha2_nodes": 2.929597,
     "beta_GRADE": 0.003453,
     "beta_ER_BIN": 0.003791,
     "beta_HER2_BIN": 0.027048,
@@ -686,10 +686,10 @@
     "beta_MKI67_Z": 0.011367
    },
    "imm_sig": {
-    "alpha0": 0.712048,
+    "alpha0": 0.712047,
     "alpha1_size": 0.080887,
-    "alpha2_nodes": 3.186051,
-    "soil_IMM_SIG_Z": -1.027797,
+    "alpha2_nodes": 3.186055,
+    "soil_IMM_SIG_Z": -1.027798,
     "beta_GRADE": 0.009844,
     "beta_ER_BIN": -0.005112,
     "beta_HER2_BIN": 0.029951,
@@ -698,7 +698,7 @@
    "imm_cyt": {
     "alpha0": 0.746873,
     "alpha1_size": 0.080741,
-    "alpha2_nodes": 3.190503,
+    "alpha2_nodes": 3.190506,
     "soil_CYT_Z": -1.037994,
     "beta_GRADE": 0.009227,
     "beta_ER_BIN": -0.004452,
@@ -706,7 +706,7 @@
     "beta_PR_BIN": -0.009432
    },
    "imm_pdl1": {
-    "alpha0": 1.066893,
+    "alpha0": 1.066896,
     "alpha1_size": 0.084579,
     "alpha2_nodes": 3.002973,
     "soil_PDL1_Z": -0.131508,
@@ -716,10 +716,10 @@
     "beta_PR_BIN": -0.007374
    },
    "mki67_imm": {
-    "alpha0": 1.420801,
+    "alpha0": 1.420803,
     "alpha1_size": 0.076597,
-    "alpha2_nodes": 3.104102,
-    "soil_IMM_SIG_Z": -0.922023,
+    "alpha2_nodes": 3.104103,
+    "soil_IMM_SIG_Z": -0.922024,
     "beta_GRADE": 0.004884,
     "beta_ER_BIN": -0.000683,
     "beta_HER2_BIN": 0.028569,
@@ -929,22 +929,22 @@
   },
   {
    "comparison": "continuous ESR1/PGR/ERBB2 mRNA - main",
-   "delta_C_mean": 0.0017452583476030487,
+   "delta_C_mean": 0.0017453232028712003,
    "ci_lo": -0.00762672213762394,
    "ci_hi": 0.011556916944895529,
    "n_valid": 1000,
    "frac_positive": 0.644,
-   "C_A_oob": 0.6524822481688224,
+   "C_A_oob": 0.6524823130240905,
    "C_B_oob": 0.6507369898212194
   },
   {
    "comparison": "+MKI67 mRNA - main",
-   "delta_C_mean": 0.015503289465140537,
+   "delta_C_mean": 0.015503350653250845,
    "ci_lo": 0.005944259576494795,
    "ci_hi": 0.024463861506631733,
    "n_valid": 1000,
    "frac_positive": 0.996,
-   "C_A_oob": 0.6662402792863599,
+   "C_A_oob": 0.6662403404744702,
    "C_B_oob": 0.6507369898212194
   },
   {
@@ -969,44 +969,44 @@
   },
   {
    "comparison": "Soil=immune signature - main",
-   "delta_C_mean": 0.00507787425006564,
+   "delta_C_mean": 0.005077812117103001,
    "ci_lo": -0.0038530103134920743,
    "ci_hi": 0.011091990307929487,
    "n_valid": 1000,
    "frac_positive": 0.91,
-   "C_A_oob": 0.6558148640712849,
+   "C_A_oob": 0.6558148019383224,
    "C_B_oob": 0.6507369898212194
   },
   {
    "comparison": "Soil=cytolytic score - main",
-   "delta_C_mean": 0.006270353575093523,
+   "delta_C_mean": 0.006270378007440022,
    "ci_lo": -0.00220561822429516,
    "ci_hi": 0.012492714687630326,
    "n_valid": 1000,
    "frac_positive": 0.932,
-   "C_A_oob": 0.6570073433963128,
+   "C_A_oob": 0.6570073678286593,
    "C_B_oob": 0.6507369898212194
   },
   {
    "comparison": "Soil=PD-L1 mRNA - main",
-   "delta_C_mean": -0.0007760259289795297,
+   "delta_C_mean": -0.0007760370786286294,
    "ci_lo": -0.006132720314929235,
    "ci_hi": 0.0015956616315173412,
    "n_valid": 1000,
    "frac_positive": 0.406,
-   "C_A_oob": 0.6499609638922398,
+   "C_A_oob": 0.6499609527425907,
    "C_B_oob": 0.6507369898212194
   },
   {
    "comparison": "+MKI67 & immune Soil - main",
-   "delta_C_mean": 0.019484415488582624,
+   "delta_C_mean": 0.019484316253389488,
    "ci_lo": 0.007706182109733781,
-   "ci_hi": 0.029498654664669183,
+   "ci_hi": 0.0294984564674709,
    "n_valid": 1000,
    "frac_positive": 0.998,
-   "C_A_oob": 0.6702214053098019,
+   "C_A_oob": 0.6702213060746087,
    "C_B_oob": 0.6507369898212194
   }
  ],
- "runtime_s": 127.45057225227356
+ "runtime_s": 123.72420883178711
 }

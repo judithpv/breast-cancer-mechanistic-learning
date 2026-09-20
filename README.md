@@ -6,7 +6,7 @@ Code accompanying:
 
 > Pérez-Velázquez, J., Gölgeli, M., Kulaç, İ. *A Mechanistic Learning
 > Framework for Breast Cancer Relapse Prediction.* Mathematical
-> Biosciences (under revision, manuscript MBS-D-26-00734).
+> Biosciences (manuscript MBS-D-26-00734).
 
 A modular **Seed / Speed / Soil** framework that maps routine
 histopathological variables onto a mechanistic exponential-growth model
@@ -17,11 +17,11 @@ the paper for the full derivation and biological rationale.
 
 | File | Purpose |
 |---|---|
-| `mechanistic_model.py` | Core framework: data loading, ODE model, domain mapping (Seed/Speed), censoring-aware loss, L-BFGS-B fitting, Cox PH baseline, 5-fold CV. This is the entry point for reproducing the main results. |
+| `mechanistic_model.py` | Base implementation: data loading, ODE model, domain mapping (Seed/Speed), censoring-aware loss, L-BFGS-B fitting, Cox PH baseline, 5-fold CV, using an unanchored model with a linear nodal link. |
 | `experiments.py` | Feature-selection ablation experiments (Table 1 in the paper): isolates the marginal contribution of HER2/PR and candidate Soil proxies (cellularity, age). |
-| `revision_analysis.py` | Major-revision analyses: scale-anchored identifiability fix, saturating Seed links (log1p / pN-stage / bounded), paired-bootstrap confidence intervals, treatment-confounding sensitivity, molecular/immune Soil extensions. Companion to `mechanistic_model.py`, which is left as originally submitted. |
+| `revision_analysis.py` | Primary analysis and sensitivity analyses: scale-anchored model (log1p nodal link), identifiability analysis, alternative Seed links (linear / pN-stage / bounded), paired-bootstrap confidence intervals, treatment-confounding sensitivity, molecular/immune Soil extensions, and sensitivity to the doubling-time anchor and detection threshold. Companion to `mechanistic_model.py`. This is the entry point for reproducing the main results reported in the paper. |
 | `make_fig1.py` | Regenerates the Figure 1 pipeline schematic. |
-| `outputs_revision/`, `outputs_revision_bounded/` | Example outputs (tables, figures, bootstrap results) from the two saturating-link variants discussed in the revision, included for reference. |
+| `outputs_revision/`, `outputs_revision_bounded/` | Example outputs (tables, figures, bootstrap results) for the two analyses with the log1p link (`outputs_revision/`) and the bounded link (`outputs_revision_bounded/`) as the main model, included for reference. |
 
 ## Data
 
@@ -52,7 +52,7 @@ python mechanistic_model.py brca_metabric.tar.gz
 # Feature-selection ablation table
 python experiments.py brca_metabric.tar.gz
 
-# Full revision analysis (identifiability, bootstrap CIs, sensitivity analyses)
+# Full analysis (anchored model, identifiability, bootstrap CIs, sensitivity analyses)
 python revision_analysis.py --tar brca_metabric.tar.gz --n-boot 1000
 # add --quick for a fast smoke test (n_boot=50)
 ```

@@ -1,20 +1,20 @@
 # =============================================================================
 # revision_analysis.py
-# Major-revision analyses for MBS-D-26-00734
-# "A Mechanistic Learning Framework for Breast Cancer Relapse Prediction"
+# Extended analyses for "A Mechanistic Learning Framework for Breast Cancer
+# Relapse Prediction" (Perez-Velazquez, Golgeli, Kulac)
 #
-# Companion to mechanistic_model.py (the submitted version, left untouched).
-# Implements every quantitative item requested by Reviewer #1:
+# Companion to mechanistic_model.py (the base implementation: unanchored,
+# linear nodal link). Implements:
 #
-#   R1  Scale anchoring of (n0, lambda) on a reference phenotype   -> identifiability
-#       + numerical demonstration of the flat ridge (loss invariance, Hessian eigenvalues)
-#   R2  Negative T_pred audit and saturating Seed links (log1p nodes, pN stage, bounded)
-#   R3  (same as R2)
-#   R4  Paired bootstrap CIs: mechanistic vs Cox delta-C; continuous receptors; MKI67
-#   R5  Bootstrap CIs on every coefficient (ER coefficient in particular); ER/PR phi
-#   R6  Time-dependent AUC at 5 and 10 years on out-of-fold predictions
-#   R7  Treatment sensitivity: hormone therapy / chemotherapy as Speed covariates
-#   R8  Immune-infiltration Soil proxies from METABRIC expression
+#   1  Scale anchoring of (n0, lambda) on a reference phenotype -> identifiability,
+#      with a numerical demonstration of the flat ridge (loss invariance, Hessian eigenvalues)
+#   2  Plausibility of predicted times and saturating Seed links (log1p nodes, pN stage, bounded)
+#      2b  refits of the log1p and bounded links for other doubling-time anchors and detection thresholds M
+#   3  Illustrative patients and sensitivity of absolute n0 to the anchor
+#   4  Out-of-fold performance, time-dependent AUC, Kaplan-Meier risk groups
+#   5  ER/PR association and treatment structure
+#   6  Treatment, continuous-receptor and immune-Soil variants
+#   7  Paired bootstrap: mechanistic vs Cox delta-C, confidence intervals for every coefficient
 #
 # Usage (run from this folder):
 #   python revision_analysis.py --tar brca_metabric.tar.gz [--n-boot 1000] [--quick]
@@ -47,7 +47,7 @@ K_FOLDS  = 5
 SEED     = 42
 OPT_OPTS = dict(maxiter=5000, ftol=1e-12, gtol=1e-8)
 
-# --- Scale anchor (Reviewer point 1) -----------------------------------------
+# --- Scale anchor --------------------------------------------------------------
 # lambda is fixed for a REFERENCE PHENOTYPE to a literature volume-doubling time.
 # VERIFIED 2026-09-13: Nakashima et al. 2019, Breast Cancer 26:206-214,
 #   doi:10.1007/s12282-018-0914-0 (N=265, serial ultrasonography) report a
@@ -56,7 +56,7 @@ OPT_OPTS = dict(maxiter=5000, ftol=1e-12, gtol=1e-8)
 #   reference phenotype (Grade 2, ER+, HER2-, PR+). This is corroborated by
 #   Dahan et al. 2021, Cancer Med 10(15):5203-5217, doi:10.1002/cam4.3939, a
 #   systematic review of 80 years of doubling-time literature reporting a
-#   pooled average of 180 days across all subtypes -- add both to references.bib.
+#   pooled average of 180 days across all subtypes.
 VDT_REF_DAYS   = 185.0
 DAYS_PER_MONTH = 365.25 / 12
 LAM_REF        = np.log(2.0) / (VDT_REF_DAYS / DAYS_PER_MONTH)     # month^-1
@@ -95,7 +95,7 @@ def load_cohort(tar_path, cache_csv):
     with tarfile.open(tar_path, 'r:*') as tar:
         dp = pd.read_csv(tar.extractfile('brca_metabric/data_clinical_patient.txt'), sep='\t', comment='#')
         ds = pd.read_csv(tar.extractfile('brca_metabric/data_clinical_sample.txt'), sep='\t', comment='#')
-        df = pd.merge(dp, ds, on='PATIENT_ID').iloc[1:].reset_index(drop=True)   # identical to submitted script
+        df = pd.merge(dp, ds, on='PATIENT_ID').iloc[1:].reset_index(drop=True)   # identical to mechanistic_model.py
         f = io.TextIOWrapper(tar.extractfile('brca_metabric/data_mrna_illumina_microarray.txt'), encoding='utf-8')
         header = next(f).rstrip('\n').split('\t'); samples = header[2:]
         expr = {}
@@ -202,7 +202,7 @@ def cox_fit(df_tr, feats):
 
 # ----------------------------------------------------------------------------- evaluation helpers
 def cv_oof(df, spec, feats_cox=None):
-    """5-fold CV with the submitted fold assignment. Returns out-of-fold T_pred (mech) and
+    """5-fold CV with a fixed fold assignment (seed 42). Returns out-of-fold T_pred (mech) and
     partial hazard (Cox), per-fold C-indices, and OOF risk-group labels (threshold from training fold)."""
     N = len(df); Xs, Xsp, Xso = design(df, spec); t, e = df['RFS_MONTHS'].values, df['EVENT'].values
     rng = np.random.default_rng(SEED); perm = rng.permutation(N)
@@ -245,7 +245,7 @@ def numerical_hessian(f, x, rel=1e-4):
     return H
 
 def ridge_point(theta, spec, c):
-    """Move the (unanchored, linear-link) parameter vector along the reviewer's invariance direction."""
+    """Move the (unanchored, linear-link) parameter vector along the scale-invariance direction."""
     a0, a1, a2, b0, b1, b2, b3, b4 = theta
     return np.array([LN_M - c * (LN_M - a0), c * a1, c * a2, c * b0, c * b1, c * b2, c * b3, c * b4])
 
@@ -317,13 +317,13 @@ def main():
     line(f'Analytic cohort N={N:,}, events={int(e.sum()):,} ({100*e.mean():.1f}%), median follow-up {np.median(t):.1f} months')
     R['cohort'] = dict(N=N, events=int(e.sum()))
 
-    # ================================================================== 1. submitted model: ridge demonstration
-    sec('1. Identifiability: the submitted (unanchored, linear-link) model lies on a flat ridge')
-    spec_sub = dict(name='submitted', speed=BASE_SPEED, soil=[], link='linear', anchored=False)
+    # ================================================================== 1. unanchored model: ridge demonstration
+    sec('1. Identifiability: the unanchored, linear-link model lies on a flat ridge')
+    spec_sub = dict(name='unanchored', speed=BASE_SPEED, soil=[], link='linear', anchored=False)
     Xs, Xsp, Xso = design(df, spec_sub)
     th_sub, res_sub = fit(spec_sub, Xs, Xsp, Xso, t, e)
     L0 = loss(th_sub, spec_sub, Xs, Xsp, Xso, t, e)
-    line(f'Submitted fit reproduced: theta = {np.round(th_sub, 5).tolist()}, loss = {L0:.4f}, '
+    line(f'Unanchored linear-link fit: theta = {np.round(th_sub, 5).tolist()}, loss = {L0:.4f}, '
          f'in-sample C = {concordance_index(t, predict_t(th_sub, spec_sub, Xs, Xsp, Xso), e):.4f}')
     line(f'alpha0 hat = {th_sub[0]:.4f} vs initial value 5.0  (initialisation-dependent: ridge has no gradient)')
     ridge_rows = []
@@ -338,12 +338,12 @@ def main():
     H = numerical_hessian(lambda x: loss(x, spec_sub, Xs, Xsp, Xso, t, e), th_sub)
     S = np.diag(1 / np.maximum(np.abs(th_sub), 1e-2)); Hs = S @ H @ S     # scale-normalised Hessian
     ev = np.sort(np.linalg.eigvalsh(Hs))
-    line(f'Scale-normalised Hessian eigenvalues (submitted model): {np.array2string(ev, precision=3)}')
+    line(f'Scale-normalised Hessian eigenvalues (unanchored linear-link model): {np.array2string(ev, precision=3)}')
     line(f'  smallest/largest = {ev[0]/ev[-1]:.2e}  -> one (near-)null direction')
     R['ridge'] = dict(rows=ridge_rows, hessian_eigs_unanchored=ev.tolist())
 
     # ================================================================== 2. anchored fits, seed-link comparison
-    sec('2. Anchored model and saturating Seed links (reviewer points 1-3)')
+    sec('2. Anchored model and saturating Seed links')
     line(f'Anchor: lambda(reference phenotype grade 2, ER+, HER2-, PR+) fixed to ln2 / VDT, VDT = {VDT_REF_DAYS:.0f} days '
          f'-> lambda_ref = {LAM_REF:.4f} month^-1  (Nakashima et al. 2019; Dahan et al. 2021)')
     link_rows = []; fits = {}
@@ -367,7 +367,7 @@ def main():
     R['seed_links'] = link_rows
     main_link = args.main_link
     main = fits[main_link]; spec_main = main['spec']; th_main = main['theta']
-    line(f'\nMAIN REVISED MODEL = anchored + {main_link} node link  (change with --main-link)')
+    line(f'\nMAIN MODEL = anchored + {main_link} node link  (change with --main-link)')
 
     # seed-link figure: n0 vs nodes at cohort-median size
     fig, ax = plt.subplots(figsize=(6.5, 4.2))
@@ -405,7 +405,7 @@ def main():
     sec('3. Illustrative patients and sensitivity of absolute n0 to the anchor')
     pts = pd.DataFrame([dict(Patient='A (aggressive)', TUMOR_SIZE=30, LYMPH_NODES_EXAMINED_POSITIVE=3, GRADE=3, ER_BIN=0, HER2_BIN=1, PR_BIN=0),
                         dict(Patient='B (favourable)', TUMOR_SIZE=15, LYMPH_NODES_EXAMINED_POSITIVE=0, GRADE=1, ER_BIN=1, HER2_BIN=0, PR_BIN=1),
-                        dict(Patient='Reviewer case (26 mm, 42 nodes, A-speed)', TUMOR_SIZE=26, LYMPH_NODES_EXAMINED_POSITIVE=42, GRADE=3, ER_BIN=0, HER2_BIN=1, PR_BIN=0),
+                        dict(Patient='C (extreme nodal burden: 26 mm, 42 nodes, A-speed)', TUMOR_SIZE=26, LYMPH_NODES_EXAMINED_POSITIVE=42, GRADE=3, ER_BIN=0, HER2_BIN=1, PR_BIN=0),
                         dict(Patient='Cohort mean', TUMOR_SIZE=df['TUMOR_SIZE'].mean(), LYMPH_NODES_EXAMINED_POSITIVE=df['LYMPH_NODES_EXAMINED_POSITIVE'].mean(),
                              GRADE=df['GRADE'].mean(), ER_BIN=df['ER_BIN'].mean(), HER2_BIN=df['HER2_BIN'].mean(), PR_BIN=df['PR_BIN'].mean())])
     pt_rows = []
@@ -434,7 +434,7 @@ def main():
     R['vdt_sensitivity'] = vdt_rows
 
     # ================================================================== 4. CV performance, time-dependent AUC, KM
-    sec('4. Out-of-fold performance of the main model vs Cox (points 4, 6)')
+    sec('4. Out-of-fold performance of the main model vs Cox')
     cvm = main['cv']
     cph_full = cox_fit(df, SEED_COLS + BASE_SPEED)
     perf_rows = []
@@ -449,7 +449,7 @@ def main():
     line(f'Paired per-fold delta C (mech - Cox): mean {d_folds.mean():+.4f}, sd {d_folds.std(ddof=1):.4f}')
     line('\nCox PH coefficients (full cohort):'); line(md_table(cph_full.summary[['coef', 'exp(coef)', 'coef lower 95%', 'coef upper 95%', 'p']].reset_index().rename(columns={'covariate': 'covariate'}), '%.4f'))
     R['performance'] = dict(rows=perf_rows, fold_delta=d_folds.tolist())
-    # KM: in-sample median split (as submitted) and out-of-fold split (threshold from training fold)
+    # KM: in-sample median split and out-of-fold split (threshold from training fold)
     km_rows = []
     for name, hi in [('in-sample median split', main['tp'] <= np.median(main['tp'])), ('out-of-fold split (training-fold threshold)', cvm['oof_hi'])]:
         lr = logrank_test(t[hi], t[~hi], event_observed_A=e[hi], event_observed_B=e[~hi])
@@ -469,7 +469,7 @@ def main():
     plt.savefig(os.path.join(out, 'fig_km_revised.pdf'), bbox_inches='tight'); plt.close()
 
     # ================================================================== 5. ER/PR collinearity, treatment structure
-    sec('5. Collinearity and treatment confounding structure (points 5, 7)')
+    sec('5. Collinearity and treatment confounding structure')
     ct = pd.crosstab(df['ER_BIN'], df['PR_BIN']); phi = np.corrcoef(df['ER_BIN'], df['PR_BIN'])[0, 1]
     line(f'ER x PR cross-tab:\n{ct.to_string()}\nphi(ER, PR) = {phi:.3f}')
     line(f'\nER x hormone therapy:\n{pd.crosstab(df["ER_BIN"], df["HT_BIN"]).to_string()}')
@@ -484,7 +484,7 @@ def main():
     R['collinearity'] = dict(phi_ER_PR=phi, vif=vif)
 
     # ================================================================== 6. sensitivity specs (treatment, receptors, immune)
-    sec('6. Treatment, continuous-receptor and immune-Soil variants (points 4, 7, 8) — point estimates + CV')
+    sec('6. Treatment, continuous-receptor and immune-Soil variants: point estimates + CV')
     specs = {
         'main':        spec_main,
         'treat_HT':    dict(name='treat_HT', speed=BASE_SPEED + ['HT_BIN'], soil=[], link=main_link, anchored=True),
@@ -511,7 +511,7 @@ def main():
     R['variants'] = dict(rows=var_rows, params=var_params)
 
     # ================================================================== 7. paired bootstrap
-    sec(f'7. Paired bootstrap, {n_boot} resamples, out-of-bag scoring (points 4, 5)')
+    sec(f'7. Paired bootstrap, {n_boot} resamples, out-of-bag scoring')
     cox_feats = {'cox6': SEED_COLS + BASE_SPEED}
     boot_specs = {k: v for k, v in specs.items() if k != 'her2_cn'}       # her2_cn drops 4 patients; handled separately
     tb = time.time()
@@ -570,10 +570,10 @@ def main():
     R['runtime_s'] = time.time() - t0
     json.dump(R, open(os.path.join(out, 'results.json'), 'w'), indent=1, default=lambda o: float(o) if isinstance(o, (np.floating, np.integer)) else str(o))
     with open(os.path.join(out, 'summary.md'), 'w', encoding='utf-8') as f:
-        f.write(f'# Revision analysis summary (MBS-D-26-00734)\n\nGenerated by revision_analysis.py; n_boot={n_boot}; main link={main_link}; '
+        f.write(f'# Analysis summary\n\nGenerated by revision_analysis.py; n_boot={n_boot}; main link={main_link}; '
                 f'VDT_ref={VDT_REF_DAYS:.0f} d; runtime {R["runtime_s"]/60:.1f} min\n')
         f.write('\n'.join(md))
-    line(f'\nDone in {R["runtime_s"]/60:.1f} min. Outputs in {out}')
+    line(f'\nDone in {R["runtime_s"]/60:.1f} min. Outputs in {os.path.relpath(out)}')
 
 if __name__ == '__main__':
     main()
