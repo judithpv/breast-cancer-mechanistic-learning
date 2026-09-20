@@ -1,6 +1,6 @@
 # Mechanistic Learning Framework for Breast Cancer Relapse Prediction
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22830699.svg)](https://doi.org/10.5281/zenodo.22830699)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22830698.svg)](https://doi.org/10.5281/zenodo.22830698)
 
 Code accompanying:
 
@@ -60,6 +60,11 @@ python revision_analysis.py --tar brca_metabric.tar.gz --n-boot 1000
 Outputs are written to `outputs_revision/` (tables as CSV, figures as
 PDF, a `results.json`, and a human-readable `summary.md`).
 
+`table_vdt_sensitivity.csv` shows how the absolute scale of the initial burden
+$n_0$ depends on the literature doubling-time anchor (100-500 days); rank-based
+results do not depend on it. The badge above resolves to the latest archived
+version; the citation below is for the version matching these outputs.
+
 ## Status
 
 This is a research proof of concept accompanying a manuscript currently
@@ -73,8 +78,8 @@ If you use this code, please cite the archived release and the paper
 above (full paper citation to be updated on acceptance):
 
 > Pérez-Velázquez, J., Gölgeli, M., Kulaç, İ. (2026). Mechanistic
-> Learning Framework for Breast Cancer Relapse Prediction (v1.0.2)
-> [Software]. Zenodo. https://doi.org/10.5281/zenodo.22830699
+> Learning Framework for Breast Cancer Relapse Prediction (v1.0.3)
+> [Software]. Zenodo. https://doi.org/10.5281/zenodo.22857192
 
 And the METABRIC dataset:
 
