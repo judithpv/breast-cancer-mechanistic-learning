@@ -92,8 +92,8 @@ If you use this code, please cite the archived release and the paper
 above (full paper citation to be updated on acceptance):
 
 > Pérez-Velázquez, J., Gölgeli, M., Kulaç, İ. (2026). Mechanistic
-> Learning Framework for Breast Cancer Relapse Prediction (v1.0.5)
-> [Software]. Zenodo. https://doi.org/10.5281/zenodo.22871858
+> Learning Framework for Breast Cancer Relapse Prediction (v1.0.6)
+> [Software]. Zenodo. https://doi.org/10.5281/zenodo.22876976
 
 And the METABRIC dataset:
 
