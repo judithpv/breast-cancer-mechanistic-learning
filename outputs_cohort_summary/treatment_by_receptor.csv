@@ -1,0 +1,5 @@
+comparison,n_treated,n,n_missing
+"hormone therapy, ER-positive",999,1383,0
+"hormone therapy, ER-negative",124,431,0
+"chemotherapy, HER2-positive",99,227,0
+"chemotherapy, HER2-negative",288,1587,0

@@ -21,9 +21,11 @@ the paper for the full derivation and biological rationale.
 | `experiments.py` | Feature-selection ablation experiments (Table 2 in the paper): isolates the marginal contribution of HER2/PR and candidate Soil proxies (cellularity, age). |
 | `revision_analysis.py` | Primary analysis and sensitivity analyses: scale-anchored model (log1p nodal link), identifiability analysis, alternative Seed links (linear / pN-stage / bounded), paired-bootstrap confidence intervals, treatment-confounding sensitivity, molecular/immune Soil extensions, and sensitivity to the doubling-time anchor and detection threshold. Companion to `mechanistic_model.py`. This is the entry point for reproducing the main results reported in the paper. |
 | `sensitivity_speed_bucket.py` | Speed-bucket sensitivity analysis (Section 3.1 of the paper): refits the anchored log1p model with Grade + HER2 only, with ER dropped, and with ER and PR merged into one hormone-receptor variable, and reports cross-validated concordance and paired-bootstrap differences against the primary model. Imports `revision_analysis.py` unchanged (same cohort, folds and bootstrap seeds). |
+| `cohort_summary.py` | Cohort summary and descriptive checks quoted in the paper: Table 1 (baseline characteristics of the analytic cohort), hormone-therapy and chemotherapy counts by receptor status (Section 4.1), every patient with a predicted relapse time <= 0 under each Seed link (Sections 3.1 and 4.2), and the range of model-implied doubling times (Section 4.2). Imports `revision_analysis.py` unchanged. |
 | `make_fig1.py` | Regenerates the Figure 1 pipeline schematic. |
 | `outputs_revision/`, `outputs_revision_bounded/` | Example outputs (tables, figures, bootstrap results) for the two analyses with the log1p link (`outputs_revision/`) and the bounded link (`outputs_revision_bounded/`) as the main model, included for reference. |
 | `outputs_sensitivity_speed/` | Outputs of `sensitivity_speed_bucket.py` (CSV tables and `summary.md`). |
+| `outputs_cohort_summary/` | Outputs of `cohort_summary.py` (CSV tables and `summary.md`). The patient identifiers in `negative_predicted_times.csv` are the public cBioPortal METABRIC identifiers. |
 
 ## Data
 
@@ -60,11 +62,14 @@ python revision_analysis.py --tar brca_metabric.tar.gz --n-boot 1000
 
 # Speed-bucket sensitivity analysis (Section 3.1); needs revision_analysis.py in the same folder
 python sensitivity_speed_bucket.py --tar brca_metabric.tar.gz --n-boot 1000
+
+# Cohort summary: Table 1, treatment counts, predicted times <= 0, doubling-time range (about 10 seconds); needs revision_analysis.py in the same folder
+python cohort_summary.py --tar brca_metabric.tar.gz
 ```
 
 Outputs are written to `outputs_revision/` (tables as CSV, figures as
 PDF, a `results.json`, and a human-readable `summary.md`); the sensitivity
-analysis writes to `outputs_sensitivity_speed/`.
+analysis writes to `outputs_sensitivity_speed/` and the cohort summary to `outputs_cohort_summary/`.
 
 `table_vdt_sensitivity.csv` shows how the absolute scale of the initial burden
 $n_0$ depends on the literature doubling-time anchor (100-500 days); rank-based

@@ -1,0 +1,16 @@
+variable,category_or_unit,summary
+Cohort size (N),Patients,"1,814"
+Distant relapse,Event observed,737 (40.6%)
+,Right-censored,"1,077 (59.4%)"
+Follow-up time,"Months, median [IQR]",101.7 [41.8 - 169.2]
+Tumour size,"mm, mean +- SD",26.2 +- 15.3
+Positive lymph nodes,"Count, median [range]",0 [0 - 45]
+Histological grade,Grade 1,163 (9.0%)
+,Grade 2,732 (40.4%)
+,Grade 3,919 (50.7%)
+ER status,Negative (0),431 (23.8%)
+,Positive (1),"1,383 (76.2%)"
+HER2 status,Negative (0),"1,587 (87.5%)"
+,Positive (1),227 (12.5%)
+PR status,Negative (0),863 (47.6%)
+,Positive (1),951 (52.4%)
